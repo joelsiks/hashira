@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "hashira",
+	"version": "${version}",
+	"name": "Hashira",
+	"description": "Solar panels.",
+	"authors": [
+		"joelsiks"
+	],
+	"contact": {
+		"homepage": "https://joelsiks.com/hashira",
+		"sources": "https://github.com/joelsiks/hashira"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/hashira/hashira.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"hashira.Hashira"
+		]
+	},
+	"mixins": [],
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
