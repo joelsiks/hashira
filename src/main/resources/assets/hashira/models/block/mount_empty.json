@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "side": "hashira:block/mount_side",
+        "top": "hashira:block/mount_top_empty",
+        "bottom": "hashira:block/mount_bottom"
+    }
+}

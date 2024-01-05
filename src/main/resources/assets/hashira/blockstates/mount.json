@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "mounted=false": {
+            "model": "hashira:block/mount_empty"
+        },
+        "mounted=true": {
+            "model": "hashira:block/mount"
+        }
+    }
+}

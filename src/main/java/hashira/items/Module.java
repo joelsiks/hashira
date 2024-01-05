@@ -8,15 +8,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
-public class Cell extends Item {
+public class Module extends Item {
 
-    public Cell(Settings settings) {
+    public Module(Settings settings) {
         super(settings);
     }
 
     @Override
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        itemStack.setCustomName(Text.translatable("item.hashira.cell.name"));
+        itemStack.setCustomName(Text.translatable("item.hashira.module.name"));
     }
 
 }

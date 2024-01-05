@@ -1,3 +1,7 @@
 {
-    "item.hashira.cell.tooltip": "Solar Cell. Used for creating a Solar Module."
+    "item.hashira.cell.name": "Cell",
+    "item.hashira.module.name": "Module",
+    "item.hashira.panel.name": "Panel",
+    "block.hashira.mount.name": "Mount",
+    "block.hashira.mount.tooltip": "Holds a Panel"
 }
