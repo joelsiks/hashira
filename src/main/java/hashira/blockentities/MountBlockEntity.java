@@ -1,7 +1,9 @@
 package hashira.blockentities;
 
+import java.util.ArrayList;
 import hashira.Hashira;
 import hashira.ImplementedInventory;
+import hashira.Utility;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.FurnaceBlockEntity;
@@ -32,18 +34,32 @@ public class MountBlockEntity extends BlockEntity implements ImplementedInventor
             return;
         }
 
-        blockEntity.provideFuelToFurnaceIfConditionsMet();
-    }
+        // The logic of the mount emitting fuel to neighboring furnaces is ordered in
+        // terms of cheap to expensive checks.
+        // 1. Check if the panel is mounted
+        // 2. Check if it has any adjacent furnaces
+        // 3. Check if it has a clear view of the sky (can be expensive).
+        // 4. Give furnace fuel
 
-    public void provideFuelToFurnaceIfConditionsMet() {
-        if (mounted && hasClearViewOfSky()) {
-            giveFuelToNearbyFurnaces();
+        if (!blockEntity.mounted) {
+            return;
+        }
+
+        ArrayList<FurnaceBlockEntity> neighboringFurnaces = Utility.getPotentialNeighboringFurnaces(world, pos);
+        if (neighboringFurnaces.size() != 0 && blockEntity.hasClearViewOfSky()) {
+            // Charge the furnace and skip checks.
+            blockEntity.giveFuelToNearbyFurnaces(neighboringFurnaces);
         }
     }
 
     public boolean hasClearViewOfSky() {
         BlockPos blockPos = this.getPos();
         World world = this.getWorld();
+
+        // If its not day
+        if (!Utility.isDayTime(world)) {
+            return false;
+        }
 
         // Check if the block is already at the highest build limit
         if (world.getTopY() > world.getHeight()) {
@@ -71,23 +87,14 @@ public class MountBlockEntity extends BlockEntity implements ImplementedInventor
         return true;
     }
 
-    private void giveFuelToNearbyFurnaces() {
-        BlockPos[] neighborOffsets = {
-                pos.up(), pos.down(), pos.north(), pos.south(), pos.east(), pos.west()
-        };
+    private void giveFuelToNearbyFurnaces(ArrayList<FurnaceBlockEntity> neighboringFurnaces) {
+        ItemStack fuelStack = new ItemStack(Hashira.SOLAR_FUEL);
 
-        for (BlockPos offset : neighborOffsets) {
-            BlockEntity blockEntity = world.getBlockEntity(offset);
-            if (blockEntity == null) {
-                continue;
-            }
-
-            if (blockEntity instanceof FurnaceBlockEntity) {
-                System.out.println("Mount next to furnace!");
-                // FurnaceBlockEntity furnace = (FurnaceBlockEntity) blockEntity;
-                FurnaceBlockEntity furnace = (FurnaceBlockEntity) blockEntity;
-            }
+        for (FurnaceBlockEntity furnace : neighboringFurnaces) {
+            furnace.setStack(1, fuelStack);
         }
+
+        System.out.println("Mounted panel fuelled " + neighboringFurnaces.size() + " furnaces");
     }
 
     // Deserialize the BlockEntity
