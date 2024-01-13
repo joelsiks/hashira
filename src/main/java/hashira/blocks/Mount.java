@@ -1,25 +1,27 @@
 package hashira.blocks;
 
-import hashira.blockentities.MountBlockEntity;
+import com.mojang.serialization.MapCodec;
 
+import hashira.Hashira;
+import hashira.blockentities.MountBlockEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class Mount extends Block implements BlockEntityProvider {
+public class Mount extends BlockWithEntity {
 
     public static final BooleanProperty MOUNTED = BooleanProperty.of("mounted");
 
@@ -34,6 +36,19 @@ public class Mount extends Block implements BlockEntityProvider {
     }
 
     @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        // With inheriting from BlockWithEntity this defaults to INVISIBLE, so we need
+        // to change that!
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state,
+            BlockEntityType<T> type) {
+        return world.isClient ? null : validateTicker(type, Hashira.MOUNT_ENTITY, MountBlockEntity::serverTick);
+    }
+
+    @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
             BlockHitResult hit) {
 
@@ -41,27 +56,28 @@ public class Mount extends Block implements BlockEntityProvider {
             return ActionResult.SUCCESS;
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        Inventory inventoryEntity = (Inventory) blockEntity;
+        Inventory mountInventory = (Inventory) blockEntity;
         MountBlockEntity mountBlockEntity = (MountBlockEntity) blockEntity;
 
         if (!player.getStackInHand(hand).isEmpty()) {
-            if (inventoryEntity.getStack(0).isEmpty()) {
+            if (mountInventory.getStack(0).isEmpty()) {
                 // If the item is not a panel, ignore it.
-                System.out.println("Player holding: " + player.getStackInHand(hand).getTranslationKey());
                 if (!player.getStackInHand(hand).getTranslationKey().equals("item.hashira.panel"))
                     return ActionResult.PASS;
 
-                inventoryEntity.setStack(0, player.getStackInHand(hand).copy());
+                mountInventory.setStack(0, player.getStackInHand(hand).copy());
                 player.getStackInHand(hand).setCount(0);
                 mountBlockEntity.mounted = true;
                 world.setBlockState(pos, state.with(MOUNTED, true));
+                world.markDirty(pos);
             }
         } else {
-            if (!inventoryEntity.getStack(0).isEmpty()) {
-                player.getInventory().offerOrDrop(inventoryEntity.getStack(0));
-                inventoryEntity.removeStack(0);
+            if (!mountInventory.getStack(0).isEmpty()) {
+                player.getInventory().offerOrDrop(mountInventory.getStack(0));
+                mountInventory.removeStack(0);
                 mountBlockEntity.mounted = false;
                 world.setBlockState(pos, state.with(MOUNTED, false));
+                world.markDirty(pos);
             }
         }
 
@@ -71,6 +87,11 @@ public class Mount extends Block implements BlockEntityProvider {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new MountBlockEntity(pos, state);
+    }
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        throw new UnsupportedOperationException("Unimplemented method 'getCodec'");
     }
 
 }
