@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import hashira.Hashira;
 import hashira.ImplementedInventory;
 import hashira.Utility;
+import hashira.blocks.Mount;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.FurnaceBlockEntity;
@@ -42,14 +43,20 @@ public class MountBlockEntity extends BlockEntity implements ImplementedInventor
         // 4. Give furnace fuel
 
         if (!blockEntity.mounted) {
+            world.setBlockState(pos, blockState.with(Mount.ACTIVE, false));
+            world.markDirty(pos);
             return;
         }
 
         ArrayList<FurnaceBlockEntity> neighboringFurnaces = Utility.getPotentialNeighboringFurnaces(world, pos);
-        if (neighboringFurnaces.size() != 0 && blockEntity.hasClearViewOfSky()) {
+        boolean clearView = blockEntity.hasClearViewOfSky();
+        if (neighboringFurnaces.size() != 0 && clearView) {
             // Charge the furnace and skip checks.
             blockEntity.giveFuelToNearbyFurnaces(neighboringFurnaces);
         }
+
+        world.setBlockState(pos, blockState.with(Mount.ACTIVE, clearView));
+        world.markDirty(pos);
     }
 
     public boolean hasClearViewOfSky() {

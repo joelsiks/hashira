@@ -30,15 +30,17 @@ import net.minecraft.world.World;
 public class Mount extends BlockWithEntity {
 
     public static final BooleanProperty MOUNTED = BooleanProperty.of("mounted");
+    public static final BooleanProperty ACTIVE = BooleanProperty.of("active");
 
     public Mount(Settings settings) {
         super(settings);
-        setDefaultState(getDefaultState().with(MOUNTED, false));
+        setDefaultState(getDefaultState().with(MOUNTED, false).with(ACTIVE, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(MOUNTED);
+        builder.add(ACTIVE);
     }
 
     @Override

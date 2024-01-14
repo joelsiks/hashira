@@ -3,8 +3,11 @@
         "mounted=false": {
             "model": "hashira:block/mount_empty"
         },
-        "mounted=true": {
-            "model": "hashira:block/mount"
+        "mounted=true,active=false": {
+            "model": "hashira:block/mount_inactive"
+        },
+        "mounted=true,active=true": {
+            "model": "hashira:block/mount_active"
         }
     }
 }
