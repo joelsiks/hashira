@@ -44,14 +44,4 @@ public class Utility {
         return furanceEntity != null && furanceEntity.getStack(0).getCount() > 0;
     }
 
-    public static boolean isDayTime(World world) {
-        long time = world.getTime();
-        return time >= 0 && time < 12000;
-    }
-
-    public static boolean isNightTime(World world) {
-        long time = world.getTime();
-        return time >= 12000 && time < 24000;
-    }
-
 }

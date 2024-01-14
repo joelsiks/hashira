@@ -2,6 +2,8 @@ package hashira.blocks;
 
 import com.mojang.serialization.MapCodec;
 
+import java.util.List;
+
 import hashira.Hashira;
 import hashira.blockentities.MountBlockEntity;
 import net.minecraft.block.Block;
@@ -11,14 +13,18 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class Mount extends BlockWithEntity {
@@ -36,9 +42,12 @@ public class Mount extends BlockWithEntity {
     }
 
     @Override
+    public void appendTooltip(ItemStack itemStack, BlockView world, List<Text> tooltip, TooltipContext tooltipContext) {
+        itemStack.setCustomName(Text.translatable("block.hashira.mount.name"));
+    }
+
+    @Override
     public BlockRenderType getRenderType(BlockState state) {
-        // With inheriting from BlockWithEntity this defaults to INVISIBLE, so we need
-        // to change that!
         return BlockRenderType.MODEL;
     }
 

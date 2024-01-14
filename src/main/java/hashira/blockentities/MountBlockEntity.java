@@ -56,8 +56,7 @@ public class MountBlockEntity extends BlockEntity implements ImplementedInventor
         BlockPos blockPos = this.getPos();
         World world = this.getWorld();
 
-        // If its not day
-        if (!Utility.isDayTime(world)) {
+        if (!world.isDay()) {
             return false;
         }
 
